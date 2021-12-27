@@ -33,6 +33,12 @@ io.on('connection', (socket) => {
       name: data.name,
     });
   });
+
+  socket.on('answerCall', (data) => {
+    //将数据传递给通信的发起方
+    console.log(data);
+    io.to(data.to).emit('callAccepted', data.signal);
+  });
 });
 
 server.listen(5001, () => {
