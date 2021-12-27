@@ -12,16 +12,26 @@ app.use(cors());
 //初始化io
 const io = require('socket.io')(server, {
   cors: {
-    origin: 'http://localhost:3001',
+    origin: '*',
     methods: ['GET', 'POST'],
   },
 });
 
 //服务器socket连接
 io.on('connection', (socket) => {
+  socket.emit('me', socket.id);
   //断开通信
   socket.on('disconnect', () => {
     socket.broadcast.emit('callEnded');
+  });
+
+  socket.on('callUser', (data) => {
+    //将数据传递给通信的接听方
+    io.to(data.userToCall).emit('callUser', {
+      signal: data.signalData,
+      from: data.from,
+      name: data.name,
+    });
   });
 });
 
